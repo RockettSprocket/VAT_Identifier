@@ -1,0 +1,6 @@
+# Copy to .env and fill in. Never commit .env.
+BRAVE_API_KEY=
+# Optional: queries per second allowed by your Brave plan (default 1)
+BRAVE_QPS=1
+# Optional: contact shown in the crawler User-Agent (e.g. an email address)
+CRAWLER_CONTACT=
