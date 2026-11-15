@@ -1,4 +1,4 @@
-"""Run 2 additions: registrable domains, query variants, directory detection, VAT flags."""
+"""Registrable domains, query variants, the search phase with directory detection, VAT flags."""
 from filter import is_blocked, registrable_domain
 from run_pipeline import apply_flags, search_phase
 from search import SearchResult, build_queries, strip_company_suffix
