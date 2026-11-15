@@ -208,7 +208,7 @@ def test_client_backs_off_on_5xx_then_caches(tmp_path):
     assert client.network_requests == 3 and cc.BACKOFF_START in sleeps and 2 * cc.BACKOFF_START in sleeps
     assert "VATDiscoveryPoC" in seen[0]
     assert client.get("https://idx/x") == (200, b"ok")       # second call comes from the cache
-    assert client.network_requests == 3 and client.cache_hits == 1
+    assert client.network_requests == 3 and client.cache_hits == 1 and client.error_answers == 2
 
 
 def test_client_sends_range_and_caches_per_range(tmp_path):

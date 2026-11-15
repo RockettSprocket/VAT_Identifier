@@ -70,6 +70,21 @@ Behaviour towards the Common Crawl servers:
 
 Exit status is 1 when the run stopped early. Outputs in `output/` are replaced on each run.
 
+## The run in `output/`
+
+The committed outputs come from one run on run 02 at the defaults (3 crawls, 30-minute budget).
+It is incomplete and was not rerun:
+
+- 98 sites were selected; 20 were done and **78 were not reached**. The 20 are the 8 confirmed
+  companies' sites, which are done first, and the next 12 in alphabetical order of domain.
+- Why: the 30-minute budget ran out. Of 173 requests sent, `index.commoncrawl.org` answered 65
+  with 504 and 23 with 502, and one timed out. Those 89 answers took 853 of the 1,800 seconds,
+  and the back-off waits before their retries took more.
+- For the same reason only 7 of the 20 sites had every request answered (`query_complete`).
+  For the other 13, a "no" for a page can mean "the index gave no answer".
+- `run_log.jsonl` also holds 83 lines from an earlier run with a different design (whole-domain
+  listing, 6 crawls) that was stopped by hand after 5 sites; it wrote no outputs.
+
 ## What the numbers do not cover
 
 - Only the queried crawls. A site absent from them may be present in older crawls.

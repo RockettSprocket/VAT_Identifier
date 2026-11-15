@@ -236,6 +236,7 @@ class PoliteClient:
         self.network_requests = 0
         self.cache_hits = 0
         self.failed_requests = 0
+        self.error_answers = 0      # attempts answered 429 / 5xx / slow-down, or a network error
 
     def _paths(self, url: str, byte_range: str | None) -> tuple[Path, Path]:
         key = hashlib.sha1(f"{url}|{byte_range or ''}".encode("utf-8")).hexdigest()
@@ -284,6 +285,7 @@ class PoliteClient:
                 }), encoding="utf-8")
                 self.consecutive_failures = 0
                 return status, body
+            self.error_answers += bool(slow or error)
             if not (slow or error) or attempt > MAX_RETRIES:
                 break
             self._check_budget(extra_wait=delay)
@@ -427,6 +429,8 @@ def summary_markdown(run: str, args, crawl_ids: list[str], n_sites: int, site_ro
         f"- Time used: {elapsed / 60:.1f} minutes",
         f"- Requests: {client.network_requests} sent, {client.cache_hits} answered from the disk cache, "
         f"{client.failed_requests} failed after retries",
+        f"- Of the requests sent, {client.error_answers} got a 429, 5xx or slow-down answer or a "
+        f"network error (each is waited out and retried, which uses up the time budget)",
         "",
         "All counts below are over the sites done.",
         "",

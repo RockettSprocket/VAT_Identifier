@@ -8,6 +8,8 @@
 - Parameters: --crawls 3, --budget-minutes 30.0
 - Time used: 30.0 minutes
 - Requests: 173 sent, 1 answered from the disk cache, 17 failed after retries
+- Of the requests sent, 89 got a 429, 5xx or slow-down answer or a network error (each is waited out and retried, which uses up the time budget)
+- Why 78 sites were not reached: the 30-minute budget ran out after 20 sites. `index.commoncrawl.org` answered 65 requests with 504 and 23 with 502, and one request timed out; those 89 answers took 853 of the 1,800 seconds, and the waits before their retries took more. The probe was not rerun.
 
 All counts below are over the sites done.
 
