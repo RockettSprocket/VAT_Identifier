@@ -1,7 +1,7 @@
 """VAT identifier discovery pipeline: search -> directory detection -> fetch -> extract -> classify.
 
 Usage:
-    python src/run_pipeline.py --run-name pilot_try_1 --pilot-only
+    python src/run_pipeline.py --run-name pilot_try_01 --pilot-only
     python src/run_pipeline.py --run-name run_02_directory_filter_fallback_search
 
 Two phases. Phase 1 runs every search (up to three query variants per company) and counts, per
@@ -36,6 +36,7 @@ TOP_N = 5
 MAX_LINKED_PAGES = 5
 DIRECTORY_MIN_COMPANIES = 2
 MAX_NEW_SEARCHES = 900
+RUN_ID = uuid.uuid4().hex[:8]   # written to every log line of this run
 
 RESULT_COLUMNS = [
     "CompanyNumber", "CompanyName", "vat_bucket", "outcome", "site_confidence", "website",
@@ -74,6 +75,7 @@ def count_domains(results_by_company: dict[str, list]) -> dict[str, set[str]]:
 
 
 def detect_directories(seen: dict[str, set[str]]) -> set[str]:
+    """Registrable domains seen for DIRECTORY_MIN_COMPANIES or more companies."""
     return {d for d, companies in seen.items() if len(companies) >= DIRECTORY_MIN_COMPANIES}
 
 
@@ -212,7 +214,7 @@ def gather_site(company: dict, result, fetcher: Fetcher, blocklist: set[str], di
         site["fetch_note"] = "fetch_failed (" + "; ".join(errors)[:300] + ")"
         all_text = [f"{result.title} {result.description}"]
     joined = " ".join(all_text)
-    # The name_only test keeps using the full host, exactly as in run 1.
+    # The name_only test uses the full host, not the registrable domain.
     site["name_tokens_ok"] = any(extract.name_tokens_present(n, joined, site["host"]) for n in names)
     site["confidence"] = classify.site_confidence(site)
     site["review_flag"] = classify.review_flag(site)
@@ -221,6 +223,7 @@ def gather_site(company: dict, result, fetcher: Fetcher, blocklist: set[str], di
 
 # ---- classify + output rows ----------------------------------------------------------------
 def _numbers_on_site(site: dict) -> str:
+    """Company numbers seen on a site, each marked as the sampled company's or another's."""
     ours = [f"{c['number']} (sampled)" for c in site["our_number"]]
     return "; ".join(ours + [f"{c['number']} (other)" for c in site["other_numbers"]])
 
@@ -293,6 +296,7 @@ def apply_flags(rows: list[dict], verify_rows: list[dict]) -> None:
 
 
 def process_company(company: dict, plan: dict, fetcher: Fetcher, blocklist: set[str], directories: set[str]):
+    """Fetch and classify one company's candidate sites; return (result row, to_verify rows)."""
     runlog.set_context(company_number=company["CompanyNumber"], run_id=RUN_ID)
     sites, discarded = [], list(plan["dropped_directories"])
     for res in plan["candidates"]:
@@ -306,6 +310,7 @@ def process_company(company: dict, plan: dict, fetcher: Fetcher, blocklist: set[
 
 # ---- run folder ----------------------------------------------------------------------------
 def write_run_notes(path, run_name: str, status: str, params: dict, rows: list[dict], verify_rows: list[dict]) -> None:
+    """Write RUN_NOTES.md: date, status, parameters and raw outcome counts."""
     outcomes = Counter(r["outcome"] for r in rows)
     lines = [
         f"# {run_name}",
@@ -333,13 +338,53 @@ def write_run_notes(path, run_name: str, status: str, params: dict, rows: list[d
 
 
 # ---- CLI -----------------------------------------------------------------------------------
-RUN_ID = uuid.uuid4().hex[:8]
+
+def select_companies(sample: list[dict], pilot_only: bool, limit: int | None) -> list[dict]:
+    """The companies of this run: the whole sample, or the pilot companies, cut to `limit`."""
+    companies = sample
+    if pilot_only:
+        pilot, _ = load_pilot()
+        wanted = {r["CompanyNumber"] for r in pilot}
+        companies = [c for c in sample if extract.normalise_company_number(c["CompanyNumber"]) in wanted]
+    if limit is not None:
+        companies = companies[:limit]
+    return companies
+
+
+def background_results(sample: list[dict], companies: list[dict], provider) -> dict[str, list]:
+    """Cached q1 results of sampled companies outside this run (no API call).
+
+    They count towards directory detection only.
+    """
+    in_run = {c["CompanyNumber"] for c in companies}
+    background = {}
+    for c in sample:
+        if c["CompanyNumber"] not in in_run:
+            cached = cached_only(provider, build_queries(c)[0][1], TOP_N)
+            if cached is not None:
+                background[c["CompanyNumber"]] = cached
+    return background
+
+
+def write_directories(path, seen: dict[str, set[str]], directories: set[str], blocklist: set[str],
+                      sample: list[dict]) -> int:
+    """Write directories_detected.csv; return how many directories were not on the blocklist."""
+    names = {c["CompanyNumber"]: c["CompanyName"] for c in sample}
+    new_dirs = [d for d in directories if not is_blocked(f"http://{d}/", blocklist)]
+    write_csv(path, [
+        {"registrable_domain": d, "companies_count": len(seen[d]),
+         "already_on_blocklist": "yes" if is_blocked(f"http://{d}/", blocklist) else "no",
+         "example_companies": "; ".join(names.get(n, n) for n in sorted(seen[d])[:5])}
+        for d in sorted(directories, key=lambda d: (-len(seen[d]), d))
+    ], DIRECTORY_COLUMNS)
+    return len(new_dirs)
 
 
 def main() -> int:
+    """Parse the arguments, check the search budget, then run both phases and write the run folder."""
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--run-name", required=True, help="outputs go to runs/<run-name>/; the folder must not exist")
-    ap.add_argument("--pilot-only", action="store_true", help="only the companies in data/pilot_results.csv")
+    ap.add_argument("--pilot-only", action="store_true", help="only the companies in the pilot results file")
     ap.add_argument("--limit", type=int, default=None, help="process at most N companies")
     ap.add_argument("--max-new-searches", type=int, default=MAX_NEW_SEARCHES,
                     help=f"stop before searching if the run could need more new API calls (default {MAX_NEW_SEARCHES})")
@@ -358,13 +403,7 @@ def main() -> int:
         return 2
 
     sample = read_csv_text(SAMPLE_PATH)
-    companies = sample
-    if args.pilot_only:
-        pilot, _ = load_pilot()
-        wanted = {r["CompanyNumber"] for r in pilot}
-        companies = [c for c in sample if extract.normalise_company_number(c["CompanyNumber"]) in wanted]
-    if args.limit is not None:
-        companies = companies[: args.limit]
+    companies = select_companies(sample, args.pilot_only, args.limit)
 
     try:
         provider = BraveProvider()
@@ -387,15 +426,7 @@ def main() -> int:
     shutil.copytree(runlog.ROOT / "config", paths["config"])
     runlog.set_log_path(paths["log"])
 
-    # Sampled companies outside this run still count towards directory detection, using only
-    # their cached q1 results (no API call).
-    in_run = {c["CompanyNumber"] for c in companies}
-    background = {}
-    for c in sample:
-        if c["CompanyNumber"] not in in_run:
-            cached = cached_only(provider, build_queries(c)[0][1], TOP_N)
-            if cached is not None:
-                background[c["CompanyNumber"]] = cached
+    background = background_results(sample, companies, provider)
 
     params = {
         "run_name": args.run_name, "run_id": RUN_ID,
@@ -415,6 +446,7 @@ def main() -> int:
     api_calls = Counter()
 
     def search_fn(company, variant, query):
+        """One search through the cache, logged with the company and query variant."""
         runlog.set_context(company_number=company["CompanyNumber"], run_id=RUN_ID, query_variant=variant)
         api_calls["cached" if is_cached(provider.name, query, TOP_N) else "new"] += 1
         return cached_search(provider, query, TOP_N)
@@ -432,21 +464,14 @@ def main() -> int:
         params["new search API calls"] = api_calls["new"]
         params["searches served from cache"] = api_calls["cached"]
 
-        names = {c["CompanyNumber"]: c["CompanyName"] for c in sample}
-        new_dirs = [d for d in directories if not is_blocked(f"http://{d}/", blocklist)]
-        write_csv(paths["directories"], [
-            {"registrable_domain": d, "companies_count": len(seen[d]),
-             "already_on_blocklist": "yes" if is_blocked(f"http://{d}/", blocklist) else "no",
-             "example_companies": "; ".join(names.get(n, n) for n in sorted(seen[d])[:5])}
-            for d in sorted(directories, key=lambda d: (-len(seen[d]), d))
-        ], DIRECTORY_COLUMNS)
+        new_dirs = write_directories(paths["directories"], seen, directories, blocklist, sample)
         params["directories detected"] = (f"{len(directories)} domains seen for >= {DIRECTORY_MIN_COMPANIES} "
-                                          f"companies, of which {len(new_dirs)} were not already on the blocklist")
+                                          f"companies, of which {new_dirs} were not already on the blocklist")
         variants = Counter(p["variant"] or "none" for p in plans.values())
         params["companies with a candidate after filtering, by query variant"] = ", ".join(
             f"{k}={variants[k]}" for k in ("q1", "q2", "q3", "none"))
         print(f"  {api_calls['new']} new API calls, {api_calls['cached']} searches from cache.")
-        print(f"  directories detected: {len(directories)} ({len(new_dirs)} not already on the blocklist) "
+        print(f"  directories detected: {len(directories)} ({new_dirs} not already on the blocklist) "
               f"-> {paths['directories']}")
         print("  companies with a candidate, by query variant: "
               + params["companies with a candidate after filtering, by query variant"])
