@@ -1,0 +1,3 @@
+# Cached Common Crawl responses (re-creatable) and the public-record exports placed by hand.
+common_crawl/cache/
+public_records/input/
