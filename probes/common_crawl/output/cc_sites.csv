@@ -1,0 +1,21 @@
+registrable_domain,companies,site_confidence,confirmed_same,home_url,crawls_queried,crawls_answered,crawls_with_capture,crawl_ids_with_capture,home_page_captured,home_page_crawls,vat_evidence_urls,vat_evidence_page_captured,vat_evidence_crawls,query_complete
+arka.works,16045837,company_number_match,yes,https://www.arka.works/,3,2,2,CC-MAIN-2026-43 CC-MAIN-2026-39,yes,CC-MAIN-2026-43 CC-MAIN-2026-39,https://www.arka.works/omnichat-uk,yes,CC-MAIN-2026-39,no
+dcgarage.co.uk,08039088,company_number_match,yes,https://www.dcgarage.co.uk/,3,2,2,CC-MAIN-2026-43 CC-MAIN-2026-39,no,"",https://www.dcgarage.co.uk/,no,"",no
+holgates.co.uk,06315158,company_number_match,yes,https://www.holgates.co.uk/,3,3,3,CC-MAIN-2026-43 CC-MAIN-2026-39 CC-MAIN-2026-34,yes,CC-MAIN-2026-43 CC-MAIN-2026-39 CC-MAIN-2026-34,https://www.holgates.co.uk/,yes,CC-MAIN-2026-43 CC-MAIN-2026-39 CC-MAIN-2026-34,yes
+jamieoliver.com,03822122,company_number_match,yes,https://www.jamieoliver.com/,3,2,3,CC-MAIN-2026-43 CC-MAIN-2026-39 CC-MAIN-2026-34,no,"",https://www.jamieoliver.com/terms/,no,"",no
+londonbookarts.org,08194189,name_only,yes,https://londonbookarts.org/,3,2,3,CC-MAIN-2026-43 CC-MAIN-2026-39 CC-MAIN-2026-34,no,"",https://londonbookarts.org/pages/terms-of-service,no,"",no
+martin-salter.com,16355817,company_number_match,yes,https://www.martin-salter.com/,3,1,1,CC-MAIN-2026-34,no,"",https://www.martin-salter.com/,no,"",no
+nelsonplumbing.co.uk,13649684,company_number_match,yes,https://www.nelsonplumbing.co.uk/,3,3,3,CC-MAIN-2026-43 CC-MAIN-2026-39 CC-MAIN-2026-34,yes,CC-MAIN-2026-39 CC-MAIN-2026-34,https://www.nelsonplumbing.co.uk/,yes,CC-MAIN-2026-39 CC-MAIN-2026-34,yes
+woodleyequipment.com,04669537,company_number_match,yes,https://www.woodleyequipment.com/,3,2,2,CC-MAIN-2026-43 CC-MAIN-2026-34,yes,CC-MAIN-2026-43 CC-MAIN-2026-34,https://www.woodleyequipment.com/,yes,CC-MAIN-2026-43 CC-MAIN-2026-34,no
+addressadda.com,SC412647,company_number_match,no,https://www.addressadda.com/,3,3,3,CC-MAIN-2026-43 CC-MAIN-2026-39 CC-MAIN-2026-34,yes,CC-MAIN-2026-34,"","","",yes
+adgsystems.co.uk,02530874,legal_name_match,no,https://adgsystems.co.uk/,3,2,"","",no,"","","","",no
+allhealthandcare.co.uk,09038028,legal_name_match,no,https://allhealthandcare.co.uk/,3,2,3,CC-MAIN-2026-43 CC-MAIN-2026-39 CC-MAIN-2026-34,no,"","","","",no
+am-i.com,07867604,company_number_match,no,https://www.am-i.com/,3,3,3,CC-MAIN-2026-43 CC-MAIN-2026-39 CC-MAIN-2026-34,yes,CC-MAIN-2026-43 CC-MAIN-2026-39 CC-MAIN-2026-34,"","","",yes
+ankkastudio.com,12743962,company_number_match,no,https://www.ankkastudio.com/,3,2,2,CC-MAIN-2026-43 CC-MAIN-2026-34,yes,CC-MAIN-2026-34,"","","",no
+apex-careers.co.uk,13755381,legal_name_match,no,https://apex-careers.co.uk/,3,"","","",no,"","","","",no
+autoperformanceservicesltd.com,14681789,legal_name_match,no,https://www.autoperformanceservicesltd.com/,3,3,"","",no,"","","","",yes
+autumnfair.com,07779993,legal_name_match,no,https://www.autumnfair.com/,3,3,3,CC-MAIN-2026-43 CC-MAIN-2026-39 CC-MAIN-2026-34,yes,CC-MAIN-2026-43 CC-MAIN-2026-39 CC-MAIN-2026-34,"","","",yes
+baronstransport.com,13843771,legal_name_match,no,https://www.baronstransport.com/,3,3,1,CC-MAIN-2026-43,yes,CC-MAIN-2026-43,"","","",yes
+biggaryouthproject.org.uk,CS005605,legal_name_match,no,https://www.biggaryouthproject.org.uk/,3,2,2,CC-MAIN-2026-43 CC-MAIN-2026-34,yes,CC-MAIN-2026-43 CC-MAIN-2026-34,"","","",no
+bl.uk,11735189,legal_name_match,no,https://www.bl.uk/,3,2,2,CC-MAIN-2026-39 CC-MAIN-2026-34,yes,CC-MAIN-2026-39 CC-MAIN-2026-34,"","","",no
+bookabuilderuk.com,16144196,legal_name_match,no,https://www.bookabuilderuk.com/,3,2,2,CC-MAIN-2026-43 CC-MAIN-2026-39,yes,CC-MAIN-2026-43,https://www.bookabuilderuk.com/privacy-policy,no,"",no

@@ -1,0 +1,11 @@
+CompanyNumber,CompanyName,vat_number,registrable_domain,our_evidence_url,capture_url,crawl,capture_timestamp,page,same_page_as_our_fetch,record_read,vat_found_labelled,vat_digits_found
+16045837,OMNICHAT.UK LTD,479038555,arka.works,https://www.arka.works/omnichat-uk,https://www.arka.works/omnichat-uk,CC-MAIN-2026-39,20260911160655,evidence,yes,yes,yes,yes
+16045837,OMNICHAT.UK LTD,479038555,arka.works,https://www.arka.works/omnichat-uk,https://www.arka.works/,CC-MAIN-2026-43,20261014215807,home,no,yes,no,no
+16045837,OMNICHAT.UK LTD,479038555,arka.works,https://www.arka.works/omnichat-uk,https://www.arka.works/,CC-MAIN-2026-39,20260909030111,home,no,yes,no,no
+06315158,HOLGATES LEISURE PARKS LTD,920311478,holgates.co.uk,https://www.holgates.co.uk/,https://www.holgates.co.uk/,CC-MAIN-2026-43,20261007123601,evidence,yes,yes,yes,yes
+06315158,HOLGATES LEISURE PARKS LTD,920311478,holgates.co.uk,https://www.holgates.co.uk/,https://www.holgates.co.uk/,CC-MAIN-2026-39,20260906115640,evidence,yes,yes,yes,yes
+06315158,HOLGATES LEISURE PARKS LTD,920311478,holgates.co.uk,https://www.holgates.co.uk/,https://www.holgates.co.uk/,CC-MAIN-2026-34,20260815065858,evidence,yes,yes,yes,yes
+13649684,NELSON PLUMBING & HEATING LTD,412697784,nelsonplumbing.co.uk,https://www.nelsonplumbing.co.uk/,https://www.nelsonplumbing.co.uk/,CC-MAIN-2026-39,20260913081121,evidence,yes,yes,no,no
+13649684,NELSON PLUMBING & HEATING LTD,412697784,nelsonplumbing.co.uk,https://www.nelsonplumbing.co.uk/,https://www.nelsonplumbing.co.uk/,CC-MAIN-2026-34,20260809010927,evidence,yes,yes,no,no
+04669537,WOODLEY EQUIPMENT COMPANY LIMITED,546398211,woodleyequipment.com,https://www.woodleyequipment.com/,https://www.woodleyequipment.com/,CC-MAIN-2026-43,20261018032307,evidence,yes,yes,yes,yes
+04669537,WOODLEY EQUIPMENT COMPANY LIMITED,546398211,woodleyequipment.com,https://www.woodleyequipment.com/,https://www.woodleyequipment.com/,CC-MAIN-2026-34,20260811050448,evidence,yes,yes,yes,yes
