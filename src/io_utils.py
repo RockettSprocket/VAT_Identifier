@@ -5,12 +5,31 @@ from pathlib import Path
 import polars as pl
 
 from extract import normalise_company_number
-from runlog import DATA
+from runlog import DATA, RUNS
 
 SAMPLE_PATH = DATA / "sample_work.csv"      # read-only input: never written by this project
 PILOT_PATH = DATA / "pilot_results.csv"     # read-only answer key
-RESULTS_PATH = DATA / "pipeline_results.csv"
-TO_VERIFY_PATH = DATA / "to_verify.csv"
+RUN_NAME = re.compile(r"[A-Za-z0-9][A-Za-z0-9._\-]*")
+
+
+def run_dir(run_name: str) -> Path:
+    """runs/<run-name>/ - every run writes its outputs to its own folder."""
+    if not RUN_NAME.fullmatch(run_name or ""):
+        raise ValueError(f"Invalid run name {run_name!r}: use letters, digits, '.', '_' and '-' only")
+    return RUNS / run_name
+
+
+def run_paths(run_name: str) -> dict[str, Path]:
+    d = run_dir(run_name)
+    return {
+        "dir": d,
+        "results": d / "pipeline_results.csv",
+        "to_verify": d / "to_verify.csv",
+        "log": d / "run_log.jsonl",
+        "directories": d / "directories_detected.csv",
+        "notes": d / "RUN_NOTES.md",
+        "config": d / "config",
+    }
 
 OUT_OF_SAMPLE = re.compile(r"out[\s_\-]*of[\s_\-]*sample", re.I)
 

@@ -209,3 +209,34 @@ waze.com
 mapquest.com
 streetmap.co.uk
 what3words.com
+
+# --- seeded from run 1 (2026-11-14): registrable domains recorded as website or other
+# candidate site for 2 or more different sampled companies
+ukpostcodecheck.com
+secret-bases.co.uk
+lursoft.lv
+easydigitalfiling.com
+tinytax.co.uk
+ico.org.uk
+identeco.co.uk
+housepricesintheuk.co.uk
+reportingaccounts.com
+opencorpdata.com
+zavia.ai
+youcontrol.com.ua
+totalgiving.co.uk
+solocheck.ie
+qapital.ai
+pappers.co.uk
+firstreport.co.uk
+checkfree.co.uk
+charitychoice.co.uk
+businessnetwork.co.uk
+sgpbusiness.com
+scoriff.co.uk
+rooplex.co.uk
+procurement.co.uk
+p-o.co.uk
+nmbs.co.uk
+doineedanelectrician.com
+bringo.co.uk

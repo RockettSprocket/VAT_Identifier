@@ -12,7 +12,7 @@ import httpx
 from bs4 import BeautifulSoup
 
 import runlog
-from filter import host_of
+from filter import registrable_domain
 
 CACHE_DIR = runlog.DATA / "cache" / "html"
 UA_TOKEN = "VATDiscoveryPoC"
@@ -22,7 +22,7 @@ TIMEOUT = 10.0
 PER_DOMAIN_INTERVAL = 1.0
 
 LINK_KEYWORDS = re.compile(
-    r"contact|about|terms|t-and-c|tandc|t&c|conditions|privacy|legal|company|imprint|impressum", re.I
+    r"contact|about|terms|t-and-c|tandc|t&c|conditions|privacy|legal|company|imprint|impressum|pricing|faq", re.I
 )
 SKIP_EXT = re.compile(r"\.(pdf|jpe?g|png|gif|svg|webp|zip|docx?|xlsx?|mp4|mp3|ics|css|js)(\?|$)", re.I)
 
@@ -146,8 +146,9 @@ class Fetcher:
 
 
 def select_links(soup: BeautifulSoup, base_url: str, limit: int = 5) -> list[str]:
-    """Same-domain links whose text or URL suggests contact/about/terms/privacy/legal/company info."""
-    base_host = host_of(base_url)
+    """Links on the same registrable domain whose text or URL suggests contact/about/terms/
+    privacy/legal/company/pricing/faq info."""
+    base_host = registrable_domain(base_url)
     base_norm = urldefrag(base_url)[0].rstrip("/")
     out: list[str] = []
     for a in soup.find_all("a", href=True):
@@ -156,7 +157,7 @@ def select_links(soup: BeautifulSoup, base_url: str, limit: int = 5) -> list[str
             continue
         absolute = urldefrag(urljoin(base_url, href))[0]
         parts = urlsplit(absolute)
-        if parts.scheme not in ("http", "https") or host_of(absolute) != base_host:
+        if parts.scheme not in ("http", "https") or registrable_domain(absolute) != base_host:
             continue
         if SKIP_EXT.search(parts.path) or absolute.rstrip("/") == base_norm:
             continue

@@ -5,9 +5,15 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 DATA = ROOT / "data"
-LOG_PATH = DATA / "run_log.jsonl"
+RUNS = ROOT / "runs"
+LOG_PATH: Path | None = None   # set per run with set_log_path(); nothing is logged before that
 
 _context: dict = {}
+
+
+def set_log_path(path: Path) -> None:
+    global LOG_PATH
+    LOG_PATH = path
 
 
 def set_context(**kw) -> None:
@@ -17,6 +23,8 @@ def set_context(**kw) -> None:
 
 
 def log(kind: str, url: str, status=None, nbytes: int = 0, error=None, **extra) -> None:
+    if LOG_PATH is None:
+        return
     rec = {
         "ts": datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "kind": kind,

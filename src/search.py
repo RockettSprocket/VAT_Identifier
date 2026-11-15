@@ -2,6 +2,7 @@
 import hashlib
 import json
 import os
+import re
 import time
 from dataclasses import dataclass
 
@@ -91,8 +92,7 @@ class BraveProvider(SearchProvider):
 
 def cached_search(provider: SearchProvider, query: str, count: int = 5) -> list[SearchResult]:
     """Top `count` results for `query`; raw responses are cached on disk per provider."""
-    key = hashlib.sha1(f"{query}|{count}".encode("utf-8")).hexdigest()
-    path = CACHE_DIR / provider.name / f"{key}.json"
+    path = _cache_path(provider.name, query, count)
     if path.exists():
         raw = json.loads(path.read_text(encoding="utf-8"))["response"]
         runlog.log("search", f"cache:{provider.name}", status=200, nbytes=path.stat().st_size,
@@ -103,3 +103,64 @@ def cached_search(provider: SearchProvider, query: str, count: int = 5) -> list[
         path.write_text(json.dumps({"query": query, "count": count, "response": raw}, ensure_ascii=False),
                         encoding="utf-8")
     return provider.parse(raw)[:count]
+
+
+def _cache_path(provider_name: str, query: str, count: int):
+    key = hashlib.sha1(f"{query}|{count}".encode("utf-8")).hexdigest()
+    return CACHE_DIR / provider_name / f"{key}.json"
+
+
+def is_cached(provider_name: str, query: str, count: int = 5) -> bool:
+    return _cache_path(provider_name, query, count).exists()
+
+
+def cached_only(provider: SearchProvider, query: str, count: int = 5) -> list[SearchResult] | None:
+    """Results from the disk cache, or None if this query was never run. No API call, no log line."""
+    path = _cache_path(provider.name, query, count)
+    if not path.exists():
+        return None
+    return provider.parse(json.loads(path.read_text(encoding="utf-8"))["response"])[:count]
+
+
+def cache_size(provider_name: str) -> int:
+    d = CACHE_DIR / provider_name
+    return sum(1 for _ in d.glob("*.json")) if d.exists() else 0
+
+
+# ---- query variants --------------------------------------------------------------------------
+_SUFFIX = re.compile(
+    r"[\s,.\-]*\b(?:LIMITED\s+LIABILITY\s+PARTNERSHIP|LIMITED\s+PARTNERSHIP|PUBLIC\s+LIMITED\s+COMPANY"
+    r"|COMMUNITY\s+INTEREST\s+COMPANY|LIMITED|L\.?T\.?D|L\.?L\.?P|P\.?L\.?C|L\.?P|C\.?I\.?C"
+    r"|CYFYNGEDIG|CYF)\.?\s*$",
+    re.I,
+)
+
+
+def strip_company_suffix(name: str) -> str:
+    """'HOWELLS LEGAL (HOLDINGS) LIMITED' -> 'HOWELLS LEGAL (HOLDINGS)'; 'C & E MOIR & SON LTD.' ->
+    'C & E MOIR & SON'. Used only to build search query q2, never for comparing names."""
+    out = (name or "").strip()
+    while True:
+        shorter = _SUFFIX.sub("", out).strip(" ,.-")
+        if shorter == out or not shorter:
+            return out
+        out = shorter
+
+
+def build_queries(company: dict) -> list[tuple[str, str]]:
+    """Up to three (variant, query) pairs, tried in order until one leaves a candidate.
+
+    q1: quoted legal name + post town
+    q2: unquoted legal name without its company suffix + post town
+    q3: quoted previous name + post town (only when a previous name exists)
+    """
+    town = company["RegAddress.PostTown"]
+    name = company["CompanyName"]
+    queries = [
+        ("q1", f'"{name}" {town}'.strip()),
+        ("q2", f"{strip_company_suffix(name)} {town}".strip()),
+    ]
+    previous = company.get("PreviousName_1.CompanyName", "")
+    if previous:
+        queries.append(("q3", f'"{previous}" {town}'.strip()))
+    return queries
