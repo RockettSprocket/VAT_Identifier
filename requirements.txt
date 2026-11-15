@@ -1,6 +1,7 @@
-polars
-httpx
-beautifulsoup4
-python-dotenv
-pytest
-tldextract
+# Direct dependencies, pinned to the versions the reported runs used (Python 3.12).
+polars==2.1.0
+httpx==0.28.1
+beautifulsoup4==4.15.0
+python-dotenv==1.2.4
+tldextract==5.4.0
+pytest==9.2.0
