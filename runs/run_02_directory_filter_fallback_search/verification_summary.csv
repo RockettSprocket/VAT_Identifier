@@ -1,0 +1,13 @@
+group_by,group,population,sampled,found,valid,confirmed,related_entity,different,unverified,found_rate,confirmed_rate
+all,all,5178004,420,37,37,8,6,23,0,0.088095,0.019048
+site_confidence,company_number_match,"","",7,7,7,0,0,0,"",""
+site_confidence,legal_name_match,"","",3,3,0,0,3,0,"",""
+site_confidence,name_only,"","",1,1,1,0,0,0,"",""
+site_confidence,other_company_number,"","",26,26,0,6,20,0,"",""
+vat_bucket,likely,113515,60,3,3,1,2,0,0,0.050000,0.016667
+vat_bucket,unclear,3129556,200,19,19,4,2,13,0,0.095000,0.020000
+vat_bucket,dormant,557408,40,3,3,1,0,2,0,0.075000,0.025000
+vat_bucket,new_no_accounts,1151548,40,5,5,0,0,5,0,0.125000,0.000000
+vat_bucket,overdue_no_accounts,190578,40,2,2,0,0,2,0,0.050000,0.000000
+vat_bucket,subsidiary,35399,40,5,5,2,2,1,0,0.125000,0.050000
+weighted,population-weighted,5178004,420,"","","","","","",0.097081,0.015486
