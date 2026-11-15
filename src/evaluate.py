@@ -2,12 +2,12 @@
 
 Usage: python src/evaluate.py --run-name <run> [--compare-to run_01_exact_name_search]
 
-Part 1 compares runs/<run>/pipeline_results.csv with the hand-checked data/pilot_results.csv.
+Part 1 compares runs/<run>/pipeline_results.csv with the hand-checked pilot results.
 Part 2 is a transition table of outcomes against the earlier run, with the companies that changed.
 Part 3 reports domains chosen as websites, query variants and fetch failures.
 
 The pilot file is the answer key and is never modified here. Pilot rows marked
-"out of sample" (in any column), or whose CompanyNumber is not in sample_work.csv,
+"out of sample" (in any column), or whose CompanyNumber is not in the sample,
 are ignored and listed.
 """
 import argparse
@@ -32,10 +32,12 @@ SHORT = {
 
 
 def vat_set(value: str) -> set[str]:
+    """The 9-digit VAT numbers in a cell that may hold several, separated by ; | or ,."""
     return {re.sub(r"\D", "", v)[-9:] for v in re.split(r"[;|,]", value or "") if re.sub(r"\D", "", v)}
 
 
 def pilot_evaluation(result_rows: list[dict]) -> None:
+    """Print outcome agreement with the pilot, the confusion table and VAT number differences."""
     pilot, ignored = load_pilot()
     results = {normalise_company_number(r["CompanyNumber"]): r for r in result_rows}
 
@@ -113,6 +115,7 @@ def pilot_evaluation(result_rows: list[dict]) -> None:
 
 
 def run_comparison(result_rows: list[dict], old_rows: list[dict], old_name: str, new_name: str) -> None:
+    """Print the outcome transition table between two runs and the companies that changed."""
     old = {normalise_company_number(r["CompanyNumber"]): r for r in old_rows}
     cols = OUTCOMES
     table = {a: {b: 0 for b in cols} for a in cols}
@@ -144,6 +147,7 @@ def run_comparison(result_rows: list[dict], old_rows: list[dict], old_name: str,
 
 
 def run_statistics(result_rows: list[dict], log_path) -> None:
+    """Print chosen domains, query variants, VAT flags and fetch failures of one run."""
     # ---- domains chosen as websites ----
     by_domain = defaultdict(list)
     for r in result_rows:
@@ -202,6 +206,7 @@ def run_statistics(result_rows: list[dict], log_path) -> None:
 
 
 def main() -> int:
+    """Print the three parts of the evaluation for one run."""
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--run-name", required=True, help="run folder under runs/ to evaluate")
     ap.add_argument("--compare-to", default="run_01_exact_name_search",

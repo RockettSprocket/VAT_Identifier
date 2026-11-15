@@ -18,6 +18,7 @@ def visible_text(html: bytes | str) -> tuple[str, str, BeautifulSoup]:
 
 
 def snippet(text: str, start: int, end: int) -> str:
+    """The match at text[start:end] with SNIPPET_PAD characters of context on each side."""
     return text[max(0, start - SNIPPET_PAD): end + SNIPPET_PAD].strip()
 
 
@@ -115,6 +116,7 @@ NOT_REGISTERED = re.compile(
 
 
 def find_not_registered(text: str) -> list[dict]:
+    """Snippets of up to three 'not VAT registered' statements."""
     return [{"snippet": snippet(text, m.start(), m.end())} for m in NOT_REGISTERED.finditer(text)][:3]
 
 
@@ -135,6 +137,7 @@ def name_tokens(name: str) -> list[str]:
 
 
 def _token_pattern(token: str) -> str:
+    """Regex for one name token: ltd == limited, and == &, apostrophes optional."""
     if token == "limited":
         return r"(?:limited|ltd)"
     if token == "and":
@@ -143,6 +146,7 @@ def _token_pattern(token: str) -> str:
 
 
 def legal_name_regex(name: str) -> re.Pattern | None:
+    """Regex matching the whole name with any punctuation between its tokens; None if no tokens."""
     tokens = name_tokens(name)
     if not tokens:
         return None
@@ -158,6 +162,7 @@ def find_legal_name(text: str, name: str) -> dict | None:
 
 
 def distinctive_tokens(name: str) -> list[str]:
+    """Name tokens without stop words and single characters; falls back to all tokens."""
     tokens = [t for t in name_tokens(name) if t not in STOP_TOKENS and len(t) > 1]
     return tokens or [t for t in name_tokens(name) if len(t) > 1] or name_tokens(name)
 

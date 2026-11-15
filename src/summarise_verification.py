@@ -88,6 +88,7 @@ def count_group(records: list[dict]) -> dict[str, int]:
 
 
 def _with_rates(row: dict) -> dict:
+    """Add found_rate and confirmed_rate (counts divided by the number sampled)."""
     row["found_rate"] = row["found"] / row["sampled"]
     row["confirmed_rate"] = row["confirmed"] / row["sampled"]
     return row
@@ -134,6 +135,7 @@ def summarise(records: list[dict], sample_rows: list[dict], population: dict[str
 
 
 def _cell(row: dict, column: str, percent: bool) -> str:
+    """One value as text; a missing value is empty, a rate is a percentage or a fraction."""
     value = row.get(column, "")
     if isinstance(value, float):
         return f"{value:.2%}" if percent else f"{value:.6f}"
@@ -155,6 +157,7 @@ def markdown_table(rows: list[dict], columns: list[str]) -> str:
 def markdown_report(run_name: str, rows: list[dict], sources: list[str]) -> str:
     """The Markdown summary: the same tables as the CSV, with the definitions used."""
     def section(group_by: str, columns: list[str]) -> str:
+        """Table of the rows of one group_by."""
         return markdown_table([r for r in rows if r["group_by"] == group_by], columns)
 
     counts = ["group", *COUNT_COLUMNS]
@@ -195,6 +198,7 @@ def load_population(path: Path) -> dict[str, int]:
 
 
 def main() -> int:
+    """Print the summary of one run and write it into the run folder if not already there."""
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--run-name", required=True, help="run folder under runs/ holding to_verify_checked.csv")
     args = ap.parse_args()

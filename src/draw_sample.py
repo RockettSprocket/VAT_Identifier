@@ -27,7 +27,7 @@ from pathlib import Path
 
 import polars as pl
 
-from runlog import DATA, ROOT
+from runlog import DATA
 
 BULK_PATH = DATA / "BasicCompanyDataAsOneFile-2026-11-01.csv"
 SEED = 42
@@ -118,6 +118,7 @@ def check_against(sample: pl.DataFrame, reference_path: Path) -> bool:
 
 
 def main() -> int:
+    """Draw the sample, write the two output files and optionally check the draw."""
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--bulk", type=Path, default=BULK_PATH, help="Companies House bulk CSV")
     ap.add_argument("--cutoff", type=date.fromisoformat, default=CUTOFF,

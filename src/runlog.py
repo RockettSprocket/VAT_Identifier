@@ -1,4 +1,7 @@
-"""Append-only evidence trail: one JSON line per search query and per HTTP fetch."""
+"""Append-only evidence trail: one JSON line per search query and per HTTP fetch.
+
+Also defines the project folders (ROOT, DATA, RUNS) used by the other modules.
+"""
 import json
 from datetime import datetime, timezone
 from pathlib import Path
@@ -12,6 +15,7 @@ _context: dict = {}
 
 
 def set_log_path(path: Path) -> None:
+    """Send all following log lines to `path` (the run_log.jsonl of the current run)."""
     global LOG_PATH
     LOG_PATH = path
 
@@ -23,6 +27,7 @@ def set_context(**kw) -> None:
 
 
 def log(kind: str, url: str, status=None, nbytes: int = 0, error=None, **extra) -> None:
+    """Append one record (kind is 'search' or 'fetch') with the current context fields."""
     if LOG_PATH is None:
         return
     rec = {

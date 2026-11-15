@@ -12,6 +12,7 @@ _EXTRACT = tldextract.TLDExtract(suffix_list_urls=(), include_psl_private_domain
 
 
 def load_blocklist(path: Path = BLOCKLIST_PATH) -> set[str]:
+    """Lower-cased domains from the blocklist file; '#' starts a comment."""
     out = set()
     for line in path.read_text(encoding="utf-8").splitlines():
         line = line.split("#", 1)[0].strip().lower()

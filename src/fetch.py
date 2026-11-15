@@ -28,6 +28,7 @@ SKIP_EXT = re.compile(r"\.(pdf|jpe?g|png|gif|svg|webp|zip|docx?|xlsx?|mp4|mp3|ic
 
 
 def user_agent() -> str:
+    """User-Agent string identifying the crawler, with the optional CRAWLER_CONTACT."""
     contact = os.environ.get("CRAWLER_CONTACT", "").strip()
     extra = f"; contact: {contact}" if contact else ""
     return f"{UA_TOKEN}/0.1 (research proof-of-concept; low-volume automated fetcher{extra})"
@@ -35,6 +36,8 @@ def user_agent() -> str:
 
 @dataclass
 class Page:
+    """Result of fetching one URL, after redirects."""
+
     url: str            # URL requested
     final_url: str      # URL after redirects
     status: int | None
@@ -43,10 +46,13 @@ class Page:
 
     @property
     def ok(self) -> bool:
+        """True for HTTP 200 with a non-empty body."""
         return self.status == 200 and bool(self.body)
 
 
 class Fetcher:
+    """HTTP client that obeys robots.txt, rate-limits per host and caches responses on disk."""
+
     def __init__(self):
         self.client = httpx.Client(
             timeout=TIMEOUT, follow_redirects=False,
@@ -99,6 +105,7 @@ class Fetcher:
 
     # ---- robots.txt ------------------------------------------------------------------------
     def allowed(self, url: str) -> bool:
+        """Whether robots.txt of the URL's origin allows this crawler to fetch it."""
         parts = urlsplit(url)
         origin = f"{parts.scheme}://{parts.netloc}"
         if origin not in self._robots:
@@ -109,6 +116,7 @@ class Fetcher:
         return rp.can_fetch(UA_TOKEN, url)
 
     def _load_robots(self, origin: str):
+        """Parsed robots.txt for an origin, or True (allow all) / False (disallow all)."""
         url = origin + "/robots.txt"
         res = None
         for _ in range(MAX_REDIRECTS):

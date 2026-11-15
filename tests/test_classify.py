@@ -1,8 +1,10 @@
+"""Site confidence, the group-site flag, the outcome per company, and the blocklist."""
 import classify as cl
 from filter import is_blocked
 
 
 def site(rank=1, ours=False, other=False, legal=False, tokens=True, vat=False, not_reg=False):
+    """A candidate site with the given evidence and its confidence."""
     s = {
         "search_rank": rank,
         "our_number": [{"number": "01671407"}] if ours else [],

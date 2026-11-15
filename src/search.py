@@ -15,6 +15,8 @@ CACHE_DIR = runlog.DATA / "cache" / "search"
 
 @dataclass
 class SearchResult:
+    """One search hit; rank starts at 1."""
+
     rank: int
     url: str
     title: str
@@ -22,7 +24,7 @@ class SearchResult:
 
 
 class SearchError(RuntimeError):
-    pass
+    """The search provider is not configured or a query failed."""
 
 
 class SearchProvider:
@@ -38,10 +40,13 @@ class SearchProvider:
         raise NotImplementedError
 
     def parse(self, raw: dict) -> list[SearchResult]:
+        """Turn a raw response into results in rank order."""
         raise NotImplementedError
 
 
 class BraveProvider(SearchProvider):
+    """Brave Search API (web search, country GB), rate-limited to BRAVE_QPS queries per second."""
+
     name = "brave"
     ENDPOINT = "https://api.search.brave.com/res/v1/web/search"
 
@@ -106,11 +111,13 @@ def cached_search(provider: SearchProvider, query: str, count: int = 5) -> list[
 
 
 def _cache_path(provider_name: str, query: str, count: int):
+    """Cache file for one (query, count) pair of a provider."""
     key = hashlib.sha1(f"{query}|{count}".encode("utf-8")).hexdigest()
     return CACHE_DIR / provider_name / f"{key}.json"
 
 
 def is_cached(provider_name: str, query: str, count: int = 5) -> bool:
+    """True if the response to this query is in the disk cache."""
     return _cache_path(provider_name, query, count).exists()
 
 
@@ -123,6 +130,7 @@ def cached_only(provider: SearchProvider, query: str, count: int = 5) -> list[Se
 
 
 def cache_size(provider_name: str) -> int:
+    """Number of cached search responses of a provider."""
     d = CACHE_DIR / provider_name
     return sum(1 for _ in d.glob("*.json")) if d.exists() else 0
 

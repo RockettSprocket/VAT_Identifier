@@ -1,3 +1,4 @@
+"""Make the modules in src/ importable from the tests."""
 import sys
 from pathlib import Path
 
