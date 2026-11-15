@@ -1,0 +1,4 @@
+# Data and evidence files are stored byte for byte (no line-ending conversion).
+*.csv -text
+*.jsonl -text
+*.ipynb -text

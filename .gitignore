@@ -1,8 +1,29 @@
+# Secrets
 .env
+
+# Local data: Companies House bulk file, parquet copy, search and page cache.
+# The small input files reviewers need are tracked in sample/.
 data/
+
+# Python
 .venv/
 __pycache__/
+*.py[cod]
 .pytest_cache/
+
+# Notebooks
 .ipynb_checkpoints/
+
+# Temporary files written during atomic CSV replacement
+*.tmp
+
+# Editors and OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Local tooling
 .specify
 .claude
