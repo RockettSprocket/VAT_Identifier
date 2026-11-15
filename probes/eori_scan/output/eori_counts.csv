@@ -1,0 +1,12 @@
+measure,value
+companies_with_chosen_website,275
+companies_with_fetched_pages,249
+pages_read,1815
+pages_missing_from_cache,""
+companies_mentioning_eori,2
+companies_with_eori_in_raw_html,3
+companies_showing_eori_number,2
+eori_numbers,2
+eori_numbers_prefix_vat_000,2
+eori_numbers_vat_labelled_elsewhere_on_site,2
+eori_numbers_vat_digits_elsewhere_on_site,2
