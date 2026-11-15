@@ -1,14 +1,31 @@
-"""Small shared CSV helpers. Every column is read as text."""
+"""Shared paths and CSV helpers. Every column is read as text.
+
+Input files are looked up in data/ first (the local, git-ignored working folder) and then in
+sample/ (the tracked copies), so a fresh clone runs without any setup of data/.
+"""
 import re
 from pathlib import Path
 
 import polars as pl
 
 from extract import normalise_company_number
-from runlog import DATA, RUNS
+from runlog import DATA, ROOT, RUNS
 
-SAMPLE_PATH = DATA / "sample_work.csv"      # read-only input: never written by this project
-PILOT_PATH = DATA / "pilot_results.csv"     # read-only answer key
+SAMPLE_DIR = ROOT / "sample"
+SAMPLE_CANDIDATES = (DATA / "sample_work.csv", SAMPLE_DIR / "sample_blank.csv")
+PILOT_CANDIDATES = (DATA / "pilot_results.csv", SAMPLE_DIR / "pilot_results.csv")
+BUCKET_COUNTS_PATH = SAMPLE_DIR / "population_bucket_counts.csv"
+
+
+def first_existing(candidates: tuple[Path, ...]) -> Path:
+    """The first path that exists, or the first candidate when none does."""
+    return next((p for p in candidates if p.exists()), candidates[0])
+
+
+SAMPLE_PATH = first_existing(SAMPLE_CANDIDATES)   # read-only input: the sampled companies
+PILOT_PATH = first_existing(PILOT_CANDIDATES)     # read-only input: hand-checked answer key
+READ_ONLY_NAMES = {"to_verify_checked.csv"}       # hand-checked files inside run folders
+OUT_OF_SAMPLE = re.compile(r"out[\s_\-]*of[\s_\-]*sample", re.I)
 RUN_NAME = re.compile(r"[A-Za-z0-9][A-Za-z0-9._\-]*")
 
 
@@ -20,6 +37,7 @@ def run_dir(run_name: str) -> Path:
 
 
 def run_paths(run_name: str) -> dict[str, Path]:
+    """Paths of the files a pipeline run writes into its run folder."""
     d = run_dir(run_name)
     return {
         "dir": d,
@@ -31,8 +49,6 @@ def run_paths(run_name: str) -> dict[str, Path]:
         "config": d / "config",
     }
 
-OUT_OF_SAMPLE = re.compile(r"out[\s_\-]*of[\s_\-]*sample", re.I)
-
 
 def read_csv_text(path: Path) -> list[dict]:
     """Read a CSV with every column as text; missing values become ''."""
@@ -41,7 +57,12 @@ def read_csv_text(path: Path) -> list[dict]:
 
 
 def write_csv(path: Path, rows: list[dict], columns: list[str]) -> None:
-    if path.resolve() in (SAMPLE_PATH.resolve(), PILOT_PATH.resolve()):
+    """Write rows as an all-text CSV with exactly `columns`, replacing the file atomically.
+
+    Refuses to write to the sample, the pilot answer key or a hand-checked file.
+    """
+    inputs = {p.resolve() for p in (*SAMPLE_CANDIDATES, *PILOT_CANDIDATES)}
+    if path.resolve() in inputs or path.name in READ_ONLY_NAMES:
         raise RuntimeError(f"Refusing to write to input file {path}")
     df = pl.DataFrame(
         [{c: str(r.get(c, "") or "") for c in columns} for r in rows],
@@ -56,7 +77,7 @@ def load_pilot() -> tuple[list[dict], list[dict]]:
     """Return (rows to evaluate, rows ignored because they are marked out of sample).
 
     A row is out of sample if any of its fields says 'out of sample' / 'out_of_sample',
-    or if its CompanyNumber does not appear in sample_work.csv at all.
+    or if its CompanyNumber does not appear in the sample at all.
     Each ignored row gets an 'ignored_reason'.
     """
     in_sample = {normalise_company_number(r["CompanyNumber"]) for r in read_csv_text(SAMPLE_PATH)}
@@ -66,7 +87,7 @@ def load_pilot() -> tuple[list[dict], list[dict]]:
         if any(OUT_OF_SAMPLE.search(v) for v in row.values()):
             ignored.append({**row, "ignored_reason": "marked out of sample"})
         elif row["CompanyNumber"] not in in_sample:
-            ignored.append({**row, "ignored_reason": "not in sample_work.csv"})
+            ignored.append({**row, "ignored_reason": f"not in {SAMPLE_PATH.name}"})
         else:
             keep.append(row)
     return keep, ignored

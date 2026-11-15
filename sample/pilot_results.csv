@@ -1,0 +1,32 @@
+pilot_row,CompanyNumber,CompanyName,outcome,website,site_match_evidence,company_number_on_site,vat_number,vat_location_on_site,hmrc_valid,hmrc_name,match_verdict,notes
+1,15923565,KANDER CARE LTD,no_website_found,,,,,,,,,
+2,16221614,ALI'S TAKEAWAY BRADFORD LTD,website_no_vat,https://alisbd9.co.uk/,TO RECORD,,,,,,,Match currently rests on name only
+3,11990408,MOVIVAN HEATHROW LIMITED,vat_found,https://movivanremovals.co.uk/,TO RECORD,,251256132,home page footer,yes,MOVIVAN LTD,related_entity,Number is registered to a sister company not the sampled company
+4,SC845320,APEX SCOT LIMITED,candidate_site_unconfirmed,https://www.apexhotels.co.uk/,none,,,,,,,Shared word only
+5,12762721,SMOKERS PARADISE PG LIMITED,no_website_found,,,,,,,,,
+6,07173504,RUTA 40 LTD,no_website_found,,,,,,,,,
+7,06705626,OSPREY HEALTHCARE LIMITED,candidate_site_unconfirmed,https://www.theospreygroup.co.uk/,none,,,,,,,No evidence recorded yet
+8,15546789,THE TRAVEL TECHNOLOGY COMPANY LTD,no_website_found,,,,,,,,,
+9,16367731,NUE WEB LTD,site_states_not_registered,https://nueweb.co.uk/pricing,TO RECORD,,,,,,,"Site says: Nue Web is not VAT registered, so no VAT is added"
+10,16434000,PODIUM EVENTS LTD,no_website_found,,,,,,,,,
+11,03402899,ALDER GROVE MANAGEMENT COMPANY LIMITED,no_website_found,,,,,,,,,Residents' management company
+12,08092712,FACILITATING THE FUTURE LIMITED,no_website_found,,,,,,,,,
+13,SC800734,MARK KEOGH PHOTOGRAPHY LTD,website_no_vat,https://markkeogh.co.uk/,TO RECORD,,,,,,,Absence of a number is not evidence of non-registration
+14,06533130,CORDWELL CONSULTING LIMITED,no_website_found,,,,,,,,,Site found was caldwellconsulting.co.uk - a different name
+15,SC330831,C & E MOIR & SON LTD.,no_website_found,,,,,,,,,CHECK: site found (johnstoncarmichael.com) looks like the accountancy firm at the registered office
+16,17300317,SYD TRADERS LTD,candidate_site_unconfirmed,https://syedtraders.store/,none,,,,,,,Site name is Syed not Syd
+17,00909820,DOWER HOUSE RESIDENTS ASSOCIATION (SUNNINGHILL) LIMITED,no_website_found,,,,,,,,,CHECK: site found (leeteestatemanagement.co.uk) looks like the managing agent
+18,02937673,TECHNIQUE FACADE LIMITED,no_website_found,,,,,,,,,
+19,LP009169,THE LXB PROPERTIES RETAIL WAREHOUSE LIMITED PARTNERSHIP,no_website_found,,,,,,,,,CHECK: site found (judge-priestley.co.uk) looks like a law firm at the registered office. Limited partnership - scope question
+20,IP11569R,CARDIGANSHIRE COUNTY PRODUCE ASSOCIATION LIMITED,no_website_found,,,,,,,,,Registered society with no address in the data - scope question
+21,08757937,FISHERBECK VIEW LIMITED,no_website_found,,,,,,,,,CHECK: site found (davenportandscott.co.uk) looks like a third party
+22,10905854,UKG SMART LIMITED,candidate_site_unconfirmed,https://www.ukg.com/,none,,,,,,,Probably the unrelated US software firm
+23,16493646,CHIP 1 EXCHANGE UK LTD,website_no_vat,https://chip1.com/contact,TO RECORD,,,,,,,Group site
+24,09946657,HOWELLS LEGAL (HOLDINGS) LIMITED,vat_found,https://www.howellslegal.co.uk/,TO RECORD,,667235907,home page footer,yes,HOWELLS LEGAL LIMITED,related_entity,Number is registered to the trading subsidiary not the sampled holding company
+25,14735348,WIZTRADE LTD,candidate_site_unconfirmed,https://www.wiztradex.com/,none,,,,,,,
+26,12123549,GREY MATTERS FRANCHISE LIMITED,no_website_found,,,,,,,,,Unrelated to Climb Global Solutions (formerly Grey Matter Limited)
+27,FC029535,PALM HILLS DEVELOPMENTS COMPANY,website_no_vat,,TO RECORD,,,,,,,Overseas company (Egypt) - scope question. Site URL not recorded
+28,SC412647,ENHANCE HOSPITALITY LIMITED,website_no_vat,https://www.enhancehospitality.com/,TO RECORD,,,,,,,
+29,09210576,BARRIER2U LTD,website_no_vat,https://www.barrier2u.co.uk/,TO RECORD,,,,,,,
+30,16950574,S AHMED PROPERTY HOLDINGS LTD,no_website_found,,,,,,,,,
+31,01671407,CLIMB GLOBAL SOLUTIONS LTD,vat_found,https://greymatter.com/,company number on site + previous name GREY MATTER LIMITED,yes,384904621,home page footer and company details page,yes,CLIMB GLOBAL SOLUTIONS LTD,same,Confirmed match
