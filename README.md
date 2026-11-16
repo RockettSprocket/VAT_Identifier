@@ -82,7 +82,7 @@ probe was built but not run on real data, so I make no claim about that route.
    the returned name and address compared with Companies House. Where HMRC returned another
    company, I checked on Companies House and on the companies' own sites whether the two were
    related.
-   5. **EORI probe.** A UK EORI number for a VAT-registered business is `GB` + its VAT number +
+5. **EORI probe.** A UK EORI number for a VAT-registered business is `GB` + its VAT number +
    `000`, so I scanned the 249 companies' fetched pages for EORI numbers. 3 sites mention EORI and
    2 show a number. Both follow the pattern, and both sites already show the VAT number on the
    same line. New VAT numbers found: 0.
