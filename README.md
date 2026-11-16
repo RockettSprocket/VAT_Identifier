@@ -130,6 +130,8 @@ Run 02 outcomes for the 420 companies:
 | Accepting a site because it shows the exact legal name | The site belongs to the company | 0 of 3 such companies had the right VAT number |
 | Treating an HMRC-valid number as found | Valid means correct | 29 of 37 valid numbers belonged to another business |
 | HMRC API for bulk checks | Automatic verification | Access needs approval, up to 10 working days. All checks were done by hand |
+| EORI as a route to the VAT number | Sites that show an EORI number but not the VAT number | 2 of 249 sites show one, and both already show the VAT number. It adds nothing found on the web |
+| Common Crawl's public index | A quick lookup of whether a site is stored | 88 of 173 requests failed; 20 sites took 30 minutes. At scale the index files would be queried in bulk instead |
 
 ## Part 2 Proof of concept
 
