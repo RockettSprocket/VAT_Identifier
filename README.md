@@ -49,8 +49,10 @@ Setup, commands for Windows PowerShell and macOS/Linux, and what can be run with
 ### Scope
 
 I tested one route end to end: find the company's own website, read the VAT number from it, and
-check that number with HMRC. I did not test the other routes named in the brief (bulk web
-corpora, adjacent identifiers, public records), so I make no claim about them.
+check that number with HMRC. After the first submission I added three smaller probes of the
+other routes named in the brief: an adjacent identifier (EORI), a bulk web corpus (Common Crawl)
+and public records. The first two were run on small samples, stated below. The public records
+probe was built but not run on real data, so I make no claim about that route.
 
 ### Sources I used
 
@@ -61,6 +63,8 @@ corpora, adjacent identifiers, public records), so I make no claim about them.
 | [HMRC VAT number checker](https://www.tax.service.gov.uk/check-vat-number/enter-vat-details) | Verifying every number found. Returns the registered name and address | Works only from number to company. Checked by hand, because API access needs an application approved by HMRC, which takes up to 10 working days |
 | [Electronic Commerce Regulations 2002, regulation 6](https://www.legislation.gov.uk/uksi/2002/2013/regulation/6) | The legal reason a website should show these numbers: its registration number (reg. 6(1)(d)) and, if its activity is subject to VAT, its VAT number (reg. 6(1)(g)) | An obligation, not a guarantee. Many sites in my sample do not comply |
 | Brave Search API | Finding candidate websites, top 5 results per query | Paid. For small companies the results are dominated by directories |
+| EORI numbers found on the fetched pages (`probes/eori_scan/`) | Testing whether another identifier leads to the VAT number | Only businesses trading goods across the border have one. The checker works from number to company only |
+| [Common Crawl](https://commoncrawl.org/) index and stored pages (`probes/common_crawl/`) | Testing whether a bulk corpus holds the same evidence without searching and fetching | The public index failed on half my requests. Each crawl is a snapshot, months behind the live site |
 
 ### The trail
 
@@ -78,6 +82,18 @@ corpora, adjacent identifiers, public records), so I make no claim about them.
    the returned name and address compared with Companies House. Where HMRC returned another
    company, I checked on Companies House and on the companies' own sites whether the two were
    related.
+   5. **EORI probe.** A UK EORI number for a VAT-registered business is `GB` + its VAT number +
+   `000`, so I scanned the 249 companies' fetched pages for EORI numbers. 3 sites mention EORI and
+   2 show a number. Both follow the pattern, and both sites already show the VAT number on the
+   same line. New VAT numbers found: 0.
+6. **Common Crawl probe.** I looked up 98 confirmed sites in three crawls (CC-MAIN-2026-43,
+   -39 and -34), the 8 companies with a confirmed number first. The run stopped at its 30-minute
+   budget after 20 sites, because 88 of 173 index requests failed with 502 or 504 errors. All 8
+   confirmed companies' sites are in the corpus. The confirmed number is in the stored text for 3
+   of 8. For 1 (Nelson Plumbing) the page was stored in September, before the VAT line was added
+   to the site. For the other 4 the index did not answer.
+7. **Public records.** A scanning script is in `probes/public_records/`, but it was not run on
+   real data.
 
 ### What I learned
 
